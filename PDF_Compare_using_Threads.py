@@ -11,9 +11,9 @@ import difflib as dl
 import threading
 from threading import Thread
 from   multiprocessing.pool import ThreadPool
-import asyncio
 
-async def main():
+
+def main():
 
     T_start_time = datetime.datetime.now()
 
@@ -23,8 +23,8 @@ async def main():
 
     ##### Declaring the Path of the files.
 
-    file_1 = "payLoad/Sample_5_doc1.pdf"
-    file_2 = "payLoad/Sample_5_doc2.pdf"
+    # file_1 = "payLoad/Sample_5_doc1.pdf"
+    # file_2 = "payLoad/Sample_5_doc2.pdf"
 
     # file_1 = "payLoad/Sample_10_doc1.pdf"
     # file_2 = "payLoad/Sample_10_doc2.pdf"
@@ -32,12 +32,12 @@ async def main():
     # file_1 = "payLoad/Sample_20_doc1.pdf"
     # file_2 = "payLoad/Sample_20_doc2.pdf"
 
-    # file_1 = "payLoad/Doc1.pdf"
-    # file_2 = "payLoad/Doc2.pdf"
+    file_1 = "payLoad/Doc1.pdf"
+    file_2 = "payLoad/Doc2.pdf"
 
     output_path = "outputFile/output_exp.json"
 
-    await(file_reading(file_1, file_2, output_path, doc1paragraphs, doc2paragraphs))
+    file_reading(file_1, file_2, output_path, doc1paragraphs, doc2paragraphs)
 
     # parsing_html()
 
@@ -49,7 +49,7 @@ async def main():
     print(TIME_TAKEN)
 
 
-async def data_fetch_file1(soup1, doc1paragraphs):
+def data_fetch_file1(soup1, doc1paragraphs):
 
     print("Inside HTML parsing doc 1")
 
@@ -80,7 +80,7 @@ async def data_fetch_file1(soup1, doc1paragraphs):
     return doc1paragraphs                  
 
 
-async def data_fetch_file2(soup2, doc2paragraphs):
+def data_fetch_file2(soup2, doc2paragraphs):
 
     print("Inside HTML parsing doc 2")
 
@@ -112,19 +112,20 @@ async def data_fetch_file2(soup2, doc2paragraphs):
 
     return doc2paragraphs            
 
-async def processFile(file):
-    xmlText = pdftotree.parse(file, html_path=None, model_type=None, model_path=None, visualize=True)
-    soup = BeautifulSoup(xmlText,'html.parser')
-    return soup
 
-async def file_reading(file_1, file_2, output_path, doc1paragraphs, doc2paragraphs):
+def file_reading(file_1, file_2, output_path, doc1paragraphs, doc2paragraphs):
 
     print("In File Reading")
 
     start_time = datetime.datetime.now()
 
-    soup1 = await(processFile(file_1))
-    soup2 = await(processFile(file_2))
+    xmlText1 = pdftotree.parse(file_1, html_path=None, model_type=None, model_path=None, visualize=True)
+    soup1 = BeautifulSoup(xmlText1,'html.parser')
+
+
+    xmlText2 = pdftotree.parse(file_1, html_path=None, model_type=None, model_path=None, visualize=True)
+    soup2 = BeautifulSoup(xmlText2,'html.parser')
+
     end_time = datetime.datetime.now()    
 
     time_taken = end_time - start_time
@@ -161,17 +162,21 @@ async def file_reading(file_1, file_2, output_path, doc1paragraphs, doc2paragrap
     print("Without using Multi Threading")
     start_time = datetime.datetime.now()
 
-    doc1paragraphs = await( data_fetch_file1(soup1, doc1paragraphs))
-    doc2paragraphs = await( data_fetch_file2(soup2, doc2paragraphs))
+    l1 = data_fetch_file1(soup1, doc1paragraphs)
+    l2 = data_fetch_file2(soup2, doc2paragraphs)
 
+    doc1paragraphs = l1
+    doc2paragraphs = l2
 
     end_time = datetime.datetime.now()    
     time_taken = end_time - start_time
     print("Time taken for PDF Compare : ", time_taken)
 
+
+    
     start_time = datetime.datetime.now()
 
-    await pdf_compare(doc1paragraphs, doc2paragraphs, output_path)
+    pdf_compare(doc1paragraphs, doc2paragraphs, output_path)
 
     end_time = datetime.datetime.now()    
 
@@ -179,7 +184,7 @@ async def file_reading(file_1, file_2, output_path, doc1paragraphs, doc2paragrap
 
     print("Time taken for PDF Compare : ", time_taken)
 
-async def pdf_compare(doc1paragraphs, doc2paragraphs, output_path):
+def pdf_compare(doc1paragraphs, doc2paragraphs, output_path):
 
     print("Inside PDF compare.")
 
@@ -247,4 +252,4 @@ async def pdf_compare(doc1paragraphs, doc2paragraphs, output_path):
 
 
 if __name__ == "__main__" :
-    asyncio.run(main() )   
+    main()    
