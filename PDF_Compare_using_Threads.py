@@ -3,7 +3,7 @@ import pdftotree
 from bs4 import BeautifulSoup
 import datetime
 import nltk
-# nltk.download('punkt')
+nltk.download('punkt')
 
 import json
 import difflib as dl
